@@ -1,25 +1,18 @@
 ﻿using Orleans.Runtime;
 
-public class SlowAndLowCoCheckGrain : Grain, ICreditCheckGrain
+public class SlowAndLowCoCheckGrain : CreditCheckGrainBase
 {
-    private readonly ILogger<SlowAndLowCoCheckGrain> _logger;
     private readonly IPersistentState<List<CreditCheck>> _checksInProgress;
-    private readonly IPersistentState<CreditCheck> _state;
     private IDisposable _timerHandle;
 
-    public SlowAndLowCoCheckGrain(
-        ILogger<SlowAndLowCoCheckGrain> logger,
-        [PersistentState("SlowAndLowCoLoansInProcess")]
-            IPersistentState<List<CreditCheck>> checksInProgress,
-        [PersistentState("SlowAndLowCoProcessedLoans")]
-            IPersistentState<CreditCheck> state)
+    public SlowAndLowCoCheckGrain(ILogger<CreditCheckGrainBase> logger, 
+        [PersistentState("CreditChecks", null)] IPersistentState<CreditCheck> state,
+        [PersistentState("CreditChecksInProgress", null)] IPersistentState<List<CreditCheck>> checksInProgress) : base(logger, state)
     {
-        _logger = logger;
         _checksInProgress = checksInProgress;
-        _state = state;
     }
 
-    public async Task<CreditCheck> Validate(LoanApplication app)
+    public override async Task<CreditCheck> Validate(LoanApplication app)
     {
         var isThisInProcessAlready =
             _checksInProgress.State.Any(x

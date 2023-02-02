@@ -1,20 +1,14 @@
 ﻿using Orleans.Runtime;
 
-[CollectionAgeLimit(Minutes = 2)]
-public class ExpressCoCheckGrain : Grain, ICreditCheckGrain
+public class ExpressCoCheckGrain : CreditCheckGrainBase
 {
-    private readonly ILogger<ExpressCoCheckGrain> _logger;
-    private readonly IPersistentState<CreditCheck> _state;
-
-    public ExpressCoCheckGrain(ILogger<ExpressCoCheckGrain> logger,
-        [PersistentState("ExpressCoProcessedLoans")]
-            IPersistentState<CreditCheck> state)
+    public ExpressCoCheckGrain(ILogger<CreditCheckGrainBase> logger,
+        [PersistentState("CreditChecks", null)]
+        IPersistentState<CreditCheck> state) : base(logger, state)
     {
-        _logger = logger;
-        _state = state;
     }
-
-    public async Task<CreditCheck> Validate(LoanApplication app)
+    
+    public override async Task<CreditCheck> Validate(LoanApplication app)
     {
         if (!_state.RecordExists)
         {

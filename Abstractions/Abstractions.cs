@@ -7,7 +7,7 @@
         Task<List<LoanApplication>> GetLoansInProgress();
     }
 
-    public interface ILoanApplicationGrain : IGrainWithGuidKey, IDisposable
+    public interface ILoanApplicationGrain : IGrainWithGuidKey
     {
         Task Set(LoanApplication app);
         Task<bool?> CheckCredit();

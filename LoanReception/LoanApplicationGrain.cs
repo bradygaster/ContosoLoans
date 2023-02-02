@@ -2,6 +2,7 @@
 
 namespace ContosoLoans.LoanReception
 {
+    [CollectionAgeLimit(Minutes = 2)]
     public class LoanApplicationGrain : Grain, ILoanApplicationGrain
     {
         private readonly ILogger<LoanApplicationGrain> _logger;
@@ -23,6 +24,11 @@ namespace ContosoLoans.LoanReception
             return Task.CompletedTask;
         }
 
+        public override async Task OnDeactivateAsync(DeactivationReason reason, CancellationToken cancellationToken)
+        {
+            await _state.WriteStateAsync();
+        }
+
         private async Task OnTimer(object arg)
         {
             var creditChecksPassYet = await CheckCredit();
@@ -30,7 +36,6 @@ namespace ContosoLoans.LoanReception
             {
                 _state.State.IsApproved = creditChecksPassYet.Value;
                 await GrainFactory.GetGrain<ILoanProcessOrchestratorGrain>(0).OnLoanApplicationProcessed(_state.State);
-
                 _timerHandle.Dispose();
             }
         }
@@ -43,8 +48,6 @@ namespace ContosoLoans.LoanReception
 
         public async Task<bool?> CheckCredit()
         {
-            _logger.LogInformation($"Checking credit for loan application #{this.GetPrimaryKey()}");
-
             var loan = (await GrainFactory.GetGrain<ILoanProcessOrchestratorGrain>(0).GetLoansInProgress())
                 .FirstOrDefault(l => l.ApplicationId == this.GetPrimaryKey());
 
@@ -63,11 +66,6 @@ namespace ContosoLoans.LoanReception
                    : result.All(r => r.IsApproved.HasValue && r.IsApproved.Value);
 
             return res;
-        }
-
-        public void Dispose()
-        {
-            DeactivateOnIdle();
         }
     }
 }
