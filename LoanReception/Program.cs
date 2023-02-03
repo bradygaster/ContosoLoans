@@ -8,7 +8,16 @@ var app = builder.BuildAppFromArguments(args);
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c =>
+    {
+        c.InjectStylesheet("/swagger-ui/SwaggerDark.css");
+    });
+    app.MapGet("/swagger-ui/SwaggerDark.css", async (CancellationToken cancellationToken, 
+        IWebHostEnvironment env) =>
+    {
+        var css = await File.ReadAllBytesAsync($"{env.WebRootPath}\\swagger-ui\\SwaggerDark.css", cancellationToken);
+        return Results.File(css, "text/css");
+    }).ExcludeFromDescription();
 }
 
 var grainFactory = app.Services.GetRequiredService<IGrainFactory>();

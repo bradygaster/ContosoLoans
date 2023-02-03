@@ -3,7 +3,6 @@
 public class SlowAndLowCoCheckGrain : CreditCheckGrainBase
 {
     private readonly IPersistentState<List<CreditCheck>> _checksInProgress;
-    private IDisposable _timerHandle;
 
     public SlowAndLowCoCheckGrain(ILogger<CreditCheckGrainBase> logger, 
         [PersistentState("CreditChecks", null)] IPersistentState<CreditCheck> state,
@@ -20,11 +19,12 @@ public class SlowAndLowCoCheckGrain : CreditCheckGrainBase
 
         if (!isThisInProcessAlready && !_state.RecordExists)
         {
+            _logger.LogInformation($"Credit check for {app.ApplicationId} with {Constants.SLOW_AND_LOW_CO} started");
             _state.State = new CreditCheck
             {
                 Agency = Constants.SLOW_AND_LOW_CO,
                 ApplicationId = app.ApplicationId,
-                Started = DateTime.Now,
+                Started = DateTime.Now.ToUniversalTime(),
                 Completed = null,
                 IsApproved = null
             };
@@ -32,15 +32,24 @@ public class SlowAndLowCoCheckGrain : CreditCheckGrainBase
         }
         else
         {
-            if (_state.State.Started.ToUniversalTime().AddSeconds(30)
+            var nxt = Random.Shared.Next(30, 90);
+            if (_state.State.Started.ToUniversalTime().AddSeconds(nxt)
                 < DateTime.Now.ToUniversalTime())
             {
                 _state.State.IsApproved = app.LoanAmount < 5000;
                 _state.State.Completed = DateTime.Now;
                 _checksInProgress.State.RemoveAll(x => x.ApplicationId == app.ApplicationId);
-                _timerHandle?.Dispose();
+                _logger.LogInformation($"Credit check for {app.ApplicationId} with {Constants.SLOW_AND_LOW_CO} completed");
+            }
+            else
+            {
+                _logger.LogInformation($"Credit check for {app.ApplicationId} with {Constants.SLOW_AND_LOW_CO} still in progress");
             }
         }
+        
+            
+        await _checksInProgress.WriteStateAsync();
+        await _state.WriteStateAsync();
 
         return _state.State;
     }

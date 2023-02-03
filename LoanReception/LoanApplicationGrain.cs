@@ -17,11 +17,10 @@ namespace ContosoLoans.LoanReception
             _state = state;
         }
 
-        public override Task OnActivateAsync(CancellationToken cancellationToken)
+        public override async Task OnActivateAsync(CancellationToken cancellationToken)
         {
+            await _state.ReadStateAsync();
             _timerHandle = base.RegisterTimer(OnTimer, null, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(5));
-
-            return Task.CompletedTask;
         }
 
         public override async Task OnDeactivateAsync(DeactivationReason reason, CancellationToken cancellationToken)
@@ -44,6 +43,7 @@ namespace ContosoLoans.LoanReception
         {
             _state.State = app;
             _state.State.Received = DateTime.Now;
+            await _state.WriteStateAsync();
         }
 
         public async Task<bool?> CheckCredit()

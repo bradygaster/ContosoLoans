@@ -24,4 +24,10 @@
 		<Using Include="ContosoLoans" />
 	</ItemGroup>
 
+	<ItemGroup>
+		<None Update="SwaggerDark.css">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
 </Project>

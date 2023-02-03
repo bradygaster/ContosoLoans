@@ -15,6 +15,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infra", "Infra", "{52F24433
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Silos", "Silos", "{D1BCA3D0-5D4A-42A0-9738-AF0E16477D17}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{63077D19-2189-4571-9F07-5A88D6DB19F9}"
+	ProjectSection(SolutionItems) = preProject
+		execute-http-call-loop.ps1 = execute-http-call-loop.ps1
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
