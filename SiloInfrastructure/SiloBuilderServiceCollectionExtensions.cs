@@ -12,7 +12,6 @@ namespace Microsoft.AspNetCore.Hosting {
             var siloPort = (args.Length > 0) ? int.Parse(args[0]) : 11111;
             var gatewayPort = (args.Length > 1) ? int.Parse(args[1]) : 30000;
             var httpPort = (args.Length > 2) ? int.Parse(args[2]) : 5001;
-            var useDashboard = (args.Length > 4) ? bool.Parse(args[4]) : true;
 
             const string tblServiceConfig = "AZURE_TABLE_SERVICE_CONNECTION_STRING";
             var tblServiceCnStr = Environment.GetEnvironmentVariable(tblServiceConfig) != null
@@ -27,18 +26,11 @@ namespace Microsoft.AspNetCore.Hosting {
                     .UseAzureStorageClustering(options =>
                         options.ConfigureTableServiceClient(tblServiceCnStr));
 
-                if (useDashboard)
-                    siloBuilder
-                        .UseDashboard(options => options.HostSelf = true)
-                        .ConfigureServices(services => services.AddServicesForSelfHostedDashboard());
-
                 if (action != null)
                     action(siloBuilder);
             });
 
             var app = builder.Build();
-            if (useDashboard)
-                app.UseOrleansDashboard();
 
             return app;
         }

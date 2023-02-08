@@ -4,12 +4,15 @@ namespace ContosoLoans.LoanReception {
     public class LoanProcessOrchestratorGrain : Grain, ILoanProcessOrchestratorGrain {
         private readonly ILogger<LoanProcessOrchestratorGrain> _logger;
         private readonly IPersistentState<List<LoanApplication>> _state;
+        private readonly HashSet<ILoanProcessOrchestratorGrainObserver> _observers;
 
         public LoanProcessOrchestratorGrain(ILogger<LoanProcessOrchestratorGrain> logger,
             [PersistentState("LoanApplicationsInProgress")]
-            IPersistentState<List<LoanApplication>> state) {
+            IPersistentState<List<LoanApplication>> state,
+            HashSet<ILoanProcessOrchestratorGrainObserver> observers) {
             _logger = logger;
             _state = state;
+            _observers = observers;
         }
 
         public override async Task OnActivateAsync(CancellationToken cancellationToken) {
@@ -49,11 +52,19 @@ namespace ContosoLoans.LoanReception {
         }
 
         public Task Subscribe(ILoanProcessOrchestratorGrainObserver observer) {
-            throw new NotImplementedException();
+            if(observer != null && !_observers.Contains(observer)) {
+                _observers.Add(observer);
+            }
+
+            return Task.CompletedTask;
         }
 
         public Task Unsubscribe(ILoanProcessOrchestratorGrainObserver observer) {
-            throw new NotImplementedException();
+            if (observer != null && _observers.Contains(observer)) {
+                _observers.Remove(observer);
+            }
+
+            return Task.CompletedTask;
         }
     }
 }

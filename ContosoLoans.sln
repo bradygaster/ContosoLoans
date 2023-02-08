@@ -20,6 +20,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{63077D19
 		execute-http-call-loop.ps1 = execute-http-call-loop.ps1
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Clients", "Clients", "{5C3B72C9-07C1-4503-9F25-898A15FEC21E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoanProcessMonitor", "LoanProcessMonitor\LoanProcessMonitor.csproj", "{3D53BDED-1946-402D-BC92-DE2B7D8422A2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,6 +46,10 @@ Global
 		{243C220C-01C5-4EB5-BCBD-50418835D1E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{243C220C-01C5-4EB5-BCBD-50418835D1E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{243C220C-01C5-4EB5-BCBD-50418835D1E3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D53BDED-1946-402D-BC92-DE2B7D8422A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D53BDED-1946-402D-BC92-DE2B7D8422A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D53BDED-1946-402D-BC92-DE2B7D8422A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D53BDED-1946-402D-BC92-DE2B7D8422A2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -51,6 +59,7 @@ Global
 		{D1F74E83-06F5-4091-9C79-41F8CA559A38} = {D1BCA3D0-5D4A-42A0-9738-AF0E16477D17}
 		{DDE1663A-3606-4F08-AC13-FD847A4FCEE6} = {D1BCA3D0-5D4A-42A0-9738-AF0E16477D17}
 		{243C220C-01C5-4EB5-BCBD-50418835D1E3} = {52F24433-DC7A-4368-BDDD-EE4FC93A5A27}
+		{3D53BDED-1946-402D-BC92-DE2B7D8422A2} = {5C3B72C9-07C1-4503-9F25-898A15FEC21E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BB8D4CF9-149C-4941-9B4B-5756EA3DE8FE}
