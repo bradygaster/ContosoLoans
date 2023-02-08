@@ -1,26 +1,27 @@
-﻿namespace ContosoLoans
-{
-    public interface ILoanProcessOrchestratorGrain : IGrainWithIntegerKey
-    {
+﻿namespace ContosoLoans {
+    public interface ILoanProcessOrchestratorGrain : IGrainWithIntegerKey {
         Task StartEvaluation(LoanApplication app);
         Task OnLoanApplicationProcessed(LoanApplication app);
         Task<List<LoanApplication>> GetLoansInProgress();
+        Task Subscribe(ILoanProcessOrchestratorGrainObserver observer);
+        Task Unsubscribe(ILoanProcessOrchestratorGrainObserver observer);
     }
 
-    public interface ILoanApplicationGrain : IGrainWithGuidKey
-    {
+    public interface ILoanProcessOrchestratorGrainObserver : IGrainObserver {
+        Task OnAfterLoanApplicationProcessed(LoanApplication app);
+    }
+
+    public interface ILoanApplicationGrain : IGrainWithGuidKey {
         Task Set(LoanApplication app);
         Task<bool?> CheckCredit();
     }
 
-    public interface ICreditCheckGrain : IGrainWithGuidKey
-    {
+    public interface ICreditCheckGrain : IGrainWithGuidKey {
         Task<CreditCheck> Validate(LoanApplication app);
     }
-    
+
     [GenerateSerializer]
-    public class LoanApplication
-    {
+    public class LoanApplication {
         [Id(0)]
         public Guid ApplicationId { get; set; } = Guid.NewGuid();
         [Id(1)]
@@ -36,8 +37,7 @@
     }
 
     [GenerateSerializer]
-    public class CreditCheck
-    {
+    public class CreditCheck {
         [Id(0)]
         public Guid ApplicationId { get; set; }
         [Id(1)]
