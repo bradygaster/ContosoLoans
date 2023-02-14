@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33318.248
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Abstractions", "Abstractions\Abstractions.csproj", "{0BBFECED-D904-4694-9C2B-DCA103AD37F4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Abstractions", "src\Abstractions\Abstractions.csproj", "{0BBFECED-D904-4694-9C2B-DCA103AD37F4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LoanReception", "LoanReception\LoanReception.csproj", "{D1F74E83-06F5-4091-9C79-41F8CA559A38}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LoanReception", "src\LoanReception\LoanReception.csproj", "{D1F74E83-06F5-4091-9C79-41F8CA559A38}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CreditCheck", "CreditCheck\CreditCheck.csproj", "{DDE1663A-3606-4F08-AC13-FD847A4FCEE6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CreditCheck", "src\CreditCheck\CreditCheck.csproj", "{DDE1663A-3606-4F08-AC13-FD847A4FCEE6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SiloInfrastructure", "SiloInfrastructure\SiloInfrastructure.csproj", "{243C220C-01C5-4EB5-BCBD-50418835D1E3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SiloInfrastructure", "src\SiloInfrastructure\SiloInfrastructure.csproj", "{243C220C-01C5-4EB5-BCBD-50418835D1E3}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infra", "Infra", "{52F24433-DC7A-4368-BDDD-EE4FC93A5A27}"
 EndProject
@@ -22,7 +22,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{63077D19
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Clients", "Clients", "{5C3B72C9-07C1-4503-9F25-898A15FEC21E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoanProcessMonitor", "LoanProcessMonitor\LoanProcessMonitor.csproj", "{3D53BDED-1946-402D-BC92-DE2B7D8422A2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoanProcessMonitor", "src\LoanProcessMonitor\LoanProcessMonitor.csproj", "{3D53BDED-1946-402D-BC92-DE2B7D8422A2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

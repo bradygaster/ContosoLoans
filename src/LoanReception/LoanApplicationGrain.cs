@@ -38,6 +38,11 @@ namespace ContosoLoans.LoanReception {
             await _state.WriteStateAsync();
         }
 
+        public async Task<LoanApplication> Get() {
+            await _state.ReadStateAsync();
+            return _state.State;
+        }
+
         public async Task<bool?> CheckCredit() {
             var loan = (await GrainFactory.GetGrain<ILoanProcessOrchestratorGrain>(0).GetLoansInProgress())
                 .FirstOrDefault(l => l.ApplicationId == this.GetPrimaryKey());

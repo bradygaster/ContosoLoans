@@ -9,9 +9,11 @@
 
     public interface ILoanProcessOrchestratorGrainObserver : IGrainObserver {
         Task OnAfterLoanApplicationProcessed(LoanApplication app);
+        Task OnAfterLoanProcessChecked(LoanApplication app);
     }
 
     public interface ILoanApplicationGrain : IGrainWithGuidKey {
+        Task<LoanApplication> Get();
         Task Set(LoanApplication app);
         Task<bool?> CheckCredit();
     }
