@@ -8,33 +8,16 @@ namespace ContosoLoans.LoanReception {
         private IDisposable _timerHandle;
 
         public LoanApplicationGrain(ILogger<LoanApplicationGrain> logger,
-            [PersistentState("LoanApplicationsInProgress")]
+            [PersistentState("LoanApplication")]
             IPersistentState<LoanApplication> state) {
             _logger = logger;
             _state = state;
         }
 
-        public override async Task OnActivateAsync(CancellationToken cancellationToken) {
-            await _state.ReadStateAsync();
-            _timerHandle = base.RegisterTimer(OnTimer, null, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(5));
-        }
-
-        public override async Task OnDeactivateAsync(DeactivationReason reason, CancellationToken cancellationToken) {
-            await _state.WriteStateAsync();
-        }
-
-        private async Task OnTimer(object arg) {
-            var creditChecksPassYet = await CheckCredit();
-            if (creditChecksPassYet.HasValue) {
-                _state.State.IsApproved = creditChecksPassYet.Value;
-                await GrainFactory.GetGrain<ILoanProcessOrchestratorGrain>(0).OnLoanApplicationProcessed(_state.State);
-                _timerHandle.Dispose();
-            }
-        }
-
         public async Task Set(LoanApplication app) {
             _state.State = app;
-            _state.State.Received = DateTime.Now;
+            _state.State.Received = _state.State.Received ?? DateTime.Now.ToUniversalTime();
+            _state.State.LastUpdate = DateTime.Now.ToUniversalTime();
             await _state.WriteStateAsync();
         }
 
@@ -44,16 +27,13 @@ namespace ContosoLoans.LoanReception {
         }
 
         public async Task<bool?> CheckCredit() {
-            var loan = (await GrainFactory.GetGrain<ILoanProcessOrchestratorGrain>(0).GetLoansInProgress())
-                .FirstOrDefault(l => l.ApplicationId == this.GetPrimaryKey());
-
             var result = await Task.WhenAll(
                 GrainFactory.GetGrain<ICreditCheckGrain>(
-                    loan.ApplicationId, Constants.EASY_CO).Validate(loan),
+                    _state.State.ApplicationId, Constants.EASY_CO).Validate(_state.State),
                 GrainFactory.GetGrain<ICreditCheckGrain>(
-                    loan.ApplicationId, Constants.EXPRESS_CO).Validate(loan),
+                    _state.State.ApplicationId, Constants.EXPRESS_CO).Validate(_state.State),
                 GrainFactory.GetGrain<ICreditCheckGrain>(
-                    loan.ApplicationId, Constants.SLOW_AND_LOW_CO).Validate(loan)
+                    _state.State.ApplicationId, Constants.SLOW_AND_LOW_CO).Validate(_state.State)
                 );
 
             bool? res =

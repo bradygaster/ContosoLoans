@@ -17,6 +17,7 @@ Here you can observe the loans as they are processed in real time.
             <th>Loan ID</th>
             <th>Loan Amount</th>
             <th>Application Received</th>
+            <th>Last Update</th>
         </tr>
     </thead>
     <tbody>
@@ -25,6 +26,7 @@ Here you can observe the loans as they are processed in real time.
                 <td>@loan.ApplicationId</td>
                 <td>@loan.LoanAmount.ToString("C", CultureInfo.CreateSpecificCulture("en-US"))</td>
                 <td>@loan.Received</td>
+                <td>@loan.LastUpdate</td>
             </tr>
         }
     </tbody>
@@ -41,22 +43,22 @@ Here you can observe the loans as they are processed in real time.
         await _loanProcessOrchestrator.Subscribe(_reference);
     }
 
-    private void RunTaskAndRefresh(Action taskToRun) {
-        taskToRun();
-        InvokeAsync(() => StateHasChanged());
+    public async Task OnAfterLoanApplicationProcessed(LoanApplication app) {
+        _loans.RemoveAll(x => x.ApplicationId == app.ApplicationId);
+        await RefreshTable();
     }
 
-    public Task OnAfterLoanApplicationProcessed(LoanApplication app)
-        => Task.Run(() => RunTaskAndRefresh(()
-            => _loans.RemoveAll(x => x.ApplicationId == app.ApplicationId)));
-
-    public Task OnAfterLoanProcessChecked(LoanApplication app) {
-        if(!_loans.Any(x => x.ApplicationId == app.ApplicationId)) {
-            RunTaskAndRefresh(() => _loans.Add(app));
-        }
-        return Task.CompletedTask;
+    public async Task OnAfterLoanProcessChecked(LoanApplication app) {
+        _loans.RemoveAll(x => x.ApplicationId == app.ApplicationId);
+        _loans.Add(app);
+        await RefreshTable();
     }
-        
+
+    private async Task RefreshTable() {
+        _loans = _loans.OrderBy(x => x.LastUpdate).ToList();
+        await InvokeAsync(() => StateHasChanged());
+    }
+
     public void Dispose()
         => _loanProcessOrchestrator.Unsubscribe(_reference);
 }

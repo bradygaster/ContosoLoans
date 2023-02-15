@@ -15,7 +15,7 @@ public class EasyCoCheckGrain : CreditCheckGrainBase {
                 Completed = DateTime.Now.ToUniversalTime(),
                 IsApproved = true
             };
-            _logger.LogInformation($"Credit check for {app.ApplicationId} with {Constants.EASY_CO} started");
+            _logger.LogInformation($"Credit check for {app.ApplicationId} with {Constants.EASY_CO} completed");
             await _state.WriteStateAsync();
         }
 

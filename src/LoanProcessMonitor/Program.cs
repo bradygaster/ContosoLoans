@@ -2,8 +2,7 @@ using ContosoLoans;
 using System.Diagnostics;
 
 if (Debugger.IsAttached) {
-    Console.WriteLine("Pausing to wait for cluster to start. Press any key to continue...");
-    Console.ReadKey();
+    await Task.Delay(5000);
 }
 
 var builder = WebApplication.CreateBuilder(args);
