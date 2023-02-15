@@ -55,7 +55,7 @@ Here you can observe the loans as they are processed in real time.
     }
 
     private async Task RefreshTable() {
-        _loans = _loans.OrderBy(x => x.LastUpdate).ToList();
+        _loans = _loans.OrderByDescending(x => x.LoanAmount).ToList();
         await InvokeAsync(() => StateHasChanged());
     }
 

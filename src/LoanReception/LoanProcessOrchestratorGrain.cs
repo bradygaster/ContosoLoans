@@ -81,6 +81,7 @@ namespace ContosoLoans.LoanReception {
 
         public async Task OnLoanApplicationProcessed(LoanApplication app) {
             _state.State.RemoveAll(x => x.ApplicationId == app.ApplicationId);
+            await _state.WriteStateAsync();
             
             _logger.LogInformation($"Loan application {app.ApplicationId} processed. Result: {app.IsApproved}");
 
