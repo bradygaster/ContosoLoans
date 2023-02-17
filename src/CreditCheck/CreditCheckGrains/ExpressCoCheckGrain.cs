@@ -1,5 +1,6 @@
 ﻿using Orleans.Runtime;
 
+[GrainType(Constants.EXPRESS_CO)]
 public class ExpressCoCheckGrain : CreditCheckGrainBase {
     public ExpressCoCheckGrain(ILogger<CreditCheckGrainBase> logger,
         [PersistentState("CreditChecks", null)]

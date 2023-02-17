@@ -1,5 +1,6 @@
 ﻿using Orleans.Runtime;
 
+[GrainType(Constants.EASY_CO)]
 public class EasyCoCheckGrain : CreditCheckGrainBase {
     public EasyCoCheckGrain(ILogger<CreditCheckGrainBase> logger,
         [PersistentState("CreditChecks", null)]

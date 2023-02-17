@@ -1,5 +1,6 @@
 ﻿using Orleans.Runtime;
 
+[GrainType(Constants.SLOW_AND_LOW_CO)]
 public class SlowAndLowCoCheckGrain : CreditCheckGrainBase {
     private readonly IPersistentState<List<CreditCheck>> _checksInProgress;
 
