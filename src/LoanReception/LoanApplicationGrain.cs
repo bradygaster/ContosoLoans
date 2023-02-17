@@ -29,11 +29,14 @@ namespace ContosoLoans.LoanReception {
         public async Task<bool?> CheckCredit() {
             var result = await Task.WhenAll(
                 GrainFactory.GetGrain<ICreditCheckGrain>(
-                    _state.State.ApplicationId, Constants.EASY_CO).Validate(_state.State),
+                    GrainId.Create(Constants.EASY_CO, _state.State.ApplicationId.ToString("N")))
+                        .Validate(_state.State),
                 GrainFactory.GetGrain<ICreditCheckGrain>(
-                    _state.State.ApplicationId, Constants.EXPRESS_CO).Validate(_state.State),
+                    GrainId.Create(Constants.EXPRESS_CO, _state.State.ApplicationId.ToString("N")))
+                        .Validate(_state.State),
                 GrainFactory.GetGrain<ICreditCheckGrain>(
-                    _state.State.ApplicationId, Constants.SLOW_AND_LOW_CO).Validate(_state.State)
+                    GrainId.Create(Constants.SLOW_AND_LOW_CO, _state.State.ApplicationId.ToString("N")))
+                        .Validate(_state.State)
                 );
 
             bool? res =
