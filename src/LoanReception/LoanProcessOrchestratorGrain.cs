@@ -5,7 +5,8 @@ namespace ContosoLoans.LoanReception {
         private readonly ILogger<LoanProcessOrchestratorGrain> _logger;
         private readonly IPersistentState<List<LoanApplication>> _state;
         private readonly HashSet<ILoanProcessOrchestratorGrainObserver> _observers = new();
-
+        private Task? _outstandingWriteStateOperation;
+        
         public LoanProcessOrchestratorGrain(ILogger<LoanProcessOrchestratorGrain> logger,
             [PersistentState("LoanApplicationsInProgress")]
             IPersistentState<List<LoanApplication>> state) {
@@ -23,31 +24,43 @@ namespace ContosoLoans.LoanReception {
         }
 
         private async Task OnTimer(object state) {
-            (await GetLoansInProgress()).ToList().ForEach(async x => {
-                _logger.LogInformation($"Checking status of loan application {x.ApplicationId}.");
+            await this.AsReference<ILoanProcessOrchestratorGrain>().OnTimerTick();
+        }
 
-                var loanAppGrain = GrainFactory.GetGrain<ILoanApplicationGrain>(x.ApplicationId);
-                var creditChecksPassYet = await loanAppGrain.CheckCredit();
-                
-                if (creditChecksPassYet.HasValue) {
-                    x.IsApproved = creditChecksPassYet.Value;
-                    x.Processed = DateTime.Now.ToUniversalTime();
-                    await loanAppGrain.Set(x);
-                    x = await loanAppGrain.Get();
-                    await OnLoanApplicationProcessed(x);
-                } else {
-                    await loanAppGrain.Set(x);
-                    x = await loanAppGrain.Get();
-                    await OnLoanApplicationChecked(x);
-                }
-                var loanApp = await loanAppGrain.Get();
-            });
+        public async Task OnTimerTick() {
+            var tasks = new List<Task>();
+            var loansToProcess = await GetLoansInProgress();
+            foreach (var x in loansToProcess) {
+                tasks.Add(ProcessLoan(x));
+            }
+
+            await Task.WhenAll(tasks);
+        }
+
+        private async Task ProcessLoan(LoanApplication loanApp) {
+            _logger.LogInformation($"Checking status of loan application {loanApp.ApplicationId}.");
+
+            var loanAppGrain = GrainFactory.GetGrain<ILoanApplicationGrain>(loanApp.ApplicationId);
+            var creditChecksPassYet = await loanAppGrain.CheckCredit();
+
+            if (creditChecksPassYet.HasValue) {
+                loanApp.IsApproved = creditChecksPassYet.Value;
+                loanApp.Processed = DateTime.Now.ToUniversalTime();
+                await loanAppGrain.Set(loanApp);
+                loanApp = await loanAppGrain.Get();
+                await OnLoanApplicationProcessed(loanApp);
+            }
+            else {
+                await loanAppGrain.Set(loanApp);
+                loanApp = await loanAppGrain.Get();
+                await OnLoanApplicationChecked(loanApp);
+            }
         }
 
         public async Task<List<LoanApplication>> GetLoansInProgress() {
             var result = new List<LoanApplication>();
 
-            foreach (var app in _state.State.OrderBy(_ => _.Received)) { 
+            foreach (var app in _state.State.OrderBy(_ => _.Received)) {
                 var loanAppGrain = GrainFactory.GetGrain<ILoanApplicationGrain>(app.ApplicationId);
                 var loanApp = await loanAppGrain.Get();
                 result.Add(loanApp);
@@ -66,7 +79,7 @@ namespace ContosoLoans.LoanReception {
 
         public async Task OnLoanApplicationChecked(LoanApplication app) {
             _logger.LogInformation($"Loan application {app.ApplicationId} checked.");
-
+            
             foreach (var observer in _observers) {
                 if (observer != null) {
                     try {
@@ -81,8 +94,37 @@ namespace ContosoLoans.LoanReception {
 
         public async Task OnLoanApplicationProcessed(LoanApplication app) {
             _state.State.RemoveAll(x => x.ApplicationId == app.ApplicationId);
-            await _state.WriteStateAsync();
             
+            if (_outstandingWriteStateOperation is Task currentWriteStateOperation) {
+                try {
+                    await currentWriteStateOperation;
+                }
+                catch {
+                }
+                finally {
+                    if (_outstandingWriteStateOperation == currentWriteStateOperation) {
+                        _outstandingWriteStateOperation = null;
+                    }
+                }
+            }
+
+            if (_outstandingWriteStateOperation is null) {
+                currentWriteStateOperation = _state.WriteStateAsync();
+                _outstandingWriteStateOperation = currentWriteStateOperation;
+            }
+            else {
+                currentWriteStateOperation = _outstandingWriteStateOperation;
+            }
+
+            try {
+                await currentWriteStateOperation;
+            }
+            finally {
+                if (_outstandingWriteStateOperation == currentWriteStateOperation) {
+                    _outstandingWriteStateOperation = null;
+                }
+            }
+
             _logger.LogInformation($"Loan application {app.ApplicationId} processed. Result: {app.IsApproved}");
 
             foreach (var observer in _observers) {

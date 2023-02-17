@@ -6,5 +6,6 @@
         Task<List<LoanApplication>> GetLoansInProgress();
         Task Subscribe(ILoanProcessOrchestratorGrainObserver observer);
         Task Unsubscribe(ILoanProcessOrchestratorGrainObserver observer);
+        Task OnTimerTick();
     }
 }
