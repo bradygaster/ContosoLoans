@@ -1,17 +1,21 @@
 ﻿using Orleans.Runtime;
+using Orleans.Utilities;
+using System;
 
 namespace ContosoLoans.LoanReception {
     public class LoanProcessOrchestratorGrain : Grain, ILoanProcessOrchestratorGrain {
         private readonly ILogger<LoanProcessOrchestratorGrain> _logger;
         private readonly IPersistentState<List<LoanApplication>> _state;
-        private readonly HashSet<ILoanProcessOrchestratorGrainObserver> _observers = new();
+        private readonly ObserverManager<ILoanProcessOrchestratorGrainObserver> _subsManager;
         private Task? _outstandingWriteStateOperation;
-        
+
         public LoanProcessOrchestratorGrain(ILogger<LoanProcessOrchestratorGrain> logger,
             [PersistentState("LoanApplicationsInProgress")]
             IPersistentState<List<LoanApplication>> state) {
             _logger = logger;
             _state = state;
+            _subsManager = new ObserverManager<ILoanProcessOrchestratorGrainObserver>(
+                TimeSpan.FromMinutes(5), logger); ;
         }
 
         public override async Task OnActivateAsync(CancellationToken cancellationToken) {
@@ -77,19 +81,19 @@ namespace ContosoLoans.LoanReception {
             await loanAppGrain.Set(app);
         }
 
+        public Task Subscribe(ILoanProcessOrchestratorGrainObserver observer) {
+            _subsManager.Subscribe(observer, observer);
+            return Task.CompletedTask;
+        }
+
+        public Task Unsubscribe(ILoanProcessOrchestratorGrainObserver observer) {
+            _subsManager.Unsubscribe(observer);
+            return Task.CompletedTask;
+        }
+
         public async Task OnLoanApplicationChecked(LoanApplication app) {
             _logger.LogInformation($"Loan application {app.ApplicationId} checked.");
-            
-            foreach (var observer in _observers) {
-                if (observer != null) {
-                    try {
-                        await observer.OnAfterLoanProcessChecked(app);
-                    }
-                    catch {
-                        _observers.Remove(observer);
-                    }
-                }
-            }
+            await _subsManager.Notify(async _ => await _.OnAfterLoanProcessChecked(app));
         }
 
         public async Task OnLoanApplicationProcessed(LoanApplication app) {
@@ -126,33 +130,7 @@ namespace ContosoLoans.LoanReception {
             }
 
             _logger.LogInformation($"Loan application {app.ApplicationId} processed. Result: {app.IsApproved}");
-
-            foreach (var observer in _observers) {
-                if (observer != null) {
-                    try {
-                        await observer.OnAfterLoanApplicationProcessed(app);
-                    }
-                    catch {
-                        _observers.Remove(observer);
-                    }
-                }
-            }
-        }
-
-        public Task Subscribe(ILoanProcessOrchestratorGrainObserver observer) {
-            if (observer != null && !_observers.Contains(observer)) {
-                _observers.Add(observer);
-            }
-
-            return Task.CompletedTask;
-        }
-
-        public Task Unsubscribe(ILoanProcessOrchestratorGrainObserver observer) {
-            if (observer != null && _observers.Contains(observer)) {
-                _observers.Remove(observer);
-            }
-
-            return Task.CompletedTask;
+            await _subsManager.Notify(async _ => await _.OnAfterLoanApplicationProcessed(app));
         }
     }
 }
