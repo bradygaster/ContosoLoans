@@ -1,52 +1,30 @@
-﻿using Azure.Monitor.OpenTelemetry.Exporter;
-using OpenTelemetry.Logs;
-using OpenTelemetry.Metrics;
+﻿using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 
 namespace ContosoLoans {
     public static class OpenTelemetryExtensions {
-        
+
         public static WebApplicationBuilder UseOpenTelemetry(this WebApplicationBuilder builder) {
-            Action<ResourceBuilder> configureResource = r
-                => r.AddService(
-                    serviceVersion: "1.0.0",
-                    serviceName: "ContosoLoans",
-                    serviceInstanceId: "ContosoLoansInstance",
-                    serviceNamespace: "ContosoLoansNS");
+            builder.Services
+                .AddOpenTelemetry()
+                    .WithMetrics(metrics => {
+                        metrics
+                            .AddPrometheusExporter()
+                            .AddMeter("Microsoft.Orleans");
+                    })
+                    .WithTracing(tracing => {
+                        tracing.SetResourceBuilder(
+                            ResourceBuilder.CreateDefault()
+                                .AddService(serviceName: "GPSTracker", serviceVersion: "1.0"));
 
-            var azureMonitorConnectionString = builder.Configuration["AzureMonitorConnectionString"];
-            
-            if(!string.IsNullOrEmpty(azureMonitorConnectionString)) {
-                builder.Services.ConfigureOpenTelemetryTracerProvider((serviceProvider, options) => {
-                    options.AddSource("Microsoft.Orleans.Runtime");
-                    options.AddSource("Microsoft.Orleans.Application");
-                    options.SetSampler(new AlwaysOnSampler());
-                    options.AddConsoleExporter();
-                    options.AddAspNetCoreInstrumentation();
-                    options.AddAzureMonitorTraceExporter(options => {
-                        options.ConnectionString = azureMonitorConnectionString;
+                        tracing.AddSource("Microsoft.Orleans.Runtime");
+                        tracing.AddSource("Microsoft.Orleans.Application");
+
+                        tracing.AddZipkinExporter(zipkin => {
+                            zipkin.Endpoint = new Uri("http://localhost:9411/api/v2/spans");
+                        });
                     });
-                });
-
-                builder.Services.ConfigureOpenTelemetryMeterProvider((serviceProvider, options) => {
-                    options.AddMeter("Microsoft.Orleans");
-                    options.AddConsoleExporter();
-                    options.AddAspNetCoreInstrumentation();
-                    options.AddAzureMonitorMetricExporter(options => {
-                        options.ConnectionString = azureMonitorConnectionString;
-                    });
-                });
-
-                builder.Logging.ClearProviders();
-
-                builder.Logging.AddOpenTelemetry(options => {
-                    var resourceBuilder = ResourceBuilder.CreateDefault();
-                    configureResource(resourceBuilder);
-                    options.SetResourceBuilder(resourceBuilder);
-                    options.AddConsoleExporter();
-                });
-            }
 
             return builder;
         }
