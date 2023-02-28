@@ -1,13 +1,12 @@
 {
   "profiles": {
-    "http": {
+    "Diagnostics": {
       "commandName": "Project",
-      "dotnetRunMessages": true,
       "launchBrowser": true,
-      "applicationUrl": "http://localhost:5003",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+      },
+      "applicationUrl": "https://localhost:56378;http://localhost:56379"
     }
   }
 }

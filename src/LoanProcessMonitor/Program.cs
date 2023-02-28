@@ -1,6 +1,7 @@
 using ContosoLoans;
 using System.Diagnostics;
 
+// useful when debugging to wait for the silos to start up
 if (Debugger.IsAttached) {
     await Task.Delay(5000);
 }
@@ -18,6 +19,7 @@ builder.Services.AddOrleansClient((clientBuilder) => {
     });
 });
 
+// add a transient service to get the loan process orchestrator grain
 builder.Services.AddTransient<ILoanProcessOrchestratorGrain>((services) => {
     var client = services.GetRequiredService<IClusterClient>();
     return client.GetGrain<ILoanProcessOrchestratorGrain>(0);
@@ -30,6 +32,9 @@ if (!app.Environment.IsDevelopment()) {
     app.UseExceptionHandler("/Error");
     app.UseHsts();
 }
+
+// health endpoint
+app.MapGet("/healthz", () => "Loan Process Monitor is up and running.");
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

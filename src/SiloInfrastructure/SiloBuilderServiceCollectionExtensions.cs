@@ -1,12 +1,13 @@
 ﻿using System.Net;
+using ContosoLoans;
 
 namespace Microsoft.AspNetCore.Hosting {
     public static class SiloBuilderServiceCollectionExtensions {
-        public static WebApplication BuildAppFromArguments(this WebApplicationBuilder builder, string[] args) {
+        public static WebApplicationBuilder BuildSiloFromArguments(this WebApplicationBuilder builder, string[] args) {
             return builder.BuildAppFromArguments(args, null);
         }
 
-        public static WebApplication BuildAppFromArguments(this WebApplicationBuilder builder,
+        public static WebApplicationBuilder BuildAppFromArguments(this WebApplicationBuilder builder,
             string[] args,
             Action<ISiloBuilder>? action = null) {
             var siloPort = (args.Length > 0) ? int.Parse(args[0]) : 11111;
@@ -30,9 +31,7 @@ namespace Microsoft.AspNetCore.Hosting {
                     action(siloBuilder);
             });
 
-            var app = builder.Build();
-
-            return app;
+            return builder;
         }
     }
 }
