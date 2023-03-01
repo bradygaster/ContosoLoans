@@ -4,10 +4,10 @@ global:
 scrape_configs:
   - job_name: 'CreditCheck'
     static_configs:
-      - targets: ['localhost:5001']
+      - targets: ['host.docker.internal:5001']
   - job_name: 'LoanReception'
     static_configs:
-      - targets: ['localhost:5002']
+      - targets: ['host.docker.internal:5002']
   - job_name: 'LoanProcessMonitor'
     static_configs:
-      - targets: ['localhost:5003']
+      - targets: ['host.docker.internal:5003']
