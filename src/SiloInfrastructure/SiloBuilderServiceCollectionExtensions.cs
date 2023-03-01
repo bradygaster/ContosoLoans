@@ -39,21 +39,27 @@ namespace Microsoft.AspNetCore.Hosting {
                     : "Silo"
                 : builder.Configuration["SiloName"];
 
-            const string tblServiceConfig = "AZURE_TABLE_SERVICE_CONNECTION_STRING";
-            var tblServiceCnStr = Environment.GetEnvironmentVariable(tblServiceConfig) != null
-                ? Environment.GetEnvironmentVariable(tblServiceConfig)
-                : "UseDevelopmentStorage=true;";
+
+            var connectionString = string.IsNullOrEmpty(builder.Configuration["AZURE_TABLE_SERVICE_CONNECTION_STRING"])
+                ? (args.Length > 4)
+                    ? args[4]
+                    : "UseDevelopmentStorage=true;"
+                : builder.Configuration["AZURE_TABLE_SERVICE_CONNECTION_STRING"];
 
             builder.Host.UseOrleans(siloBuilder => {
                 siloBuilder
                     .ConfigureEndpoints(IPAddress.Loopback, siloPort, gatewayPort)
+                    .Configure<ClusterOptions>(options => {
+                        options.ClusterId = "dev";
+                        options.ServiceId = "ContosoLoans";
+                    })
                     .Configure<SiloOptions>(options => {
                         options.SiloName = siloName;
                     })
                     .AddAzureTableGrainStorageAsDefault(options =>
-                        options.ConfigureTableServiceClient(tblServiceCnStr))
+                        options.ConfigureTableServiceClient(connectionString))
                     .UseAzureStorageClustering(options =>
-                        options.ConfigureTableServiceClient(tblServiceCnStr))
+                        options.ConfigureTableServiceClient(connectionString))
                     .AddActivityPropagation();
 
                 if (action != null)
