@@ -14,20 +14,6 @@ services:
     volumes:
       - ./azurite:/workspace
 
-  loanreception:
-    image: contosoloans/loanreception
-    ports:
-      - 5002:80
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - SiloName=LoanReception
-      - AZURE_TABLE_SERVICE_CONNECTION_STRING=DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://host.docker.internal:10000/devstoreaccount1;QueueEndpoint=http://host.docker.internal:10001/devstoreaccount1;TableEndpoint=http://host.docker.internal:10002/devstoreaccount1;
-    build:
-      context: .
-      dockerfile: src/LoanReception/Dockerfile
-    depends_on:
-      - azurite
-
   creditcheck:
     image: contosoloans/creditcheck
     ports:
@@ -35,13 +21,31 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - SiloName=CreditCheck
+      - OrleansSiloPort=11111
+      - OrleansGatewayPort=30001
       - AZURE_TABLE_SERVICE_CONNECTION_STRING=DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://host.docker.internal:10000/devstoreaccount1;QueueEndpoint=http://host.docker.internal:10001/devstoreaccount1;TableEndpoint=http://host.docker.internal:10002/devstoreaccount1;
     build:
       context: .
       dockerfile: src/CreditCheck/Dockerfile
     depends_on:
       - azurite
-      - loanreception
+
+  loanreception:
+    image: contosoloans/loanreception
+    ports:
+      - 5002:80
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - SiloName=LoanReception
+      - OrleansSiloPort=11112
+      - OrleansGatewayPort=30002
+      - AZURE_TABLE_SERVICE_CONNECTION_STRING=DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://host.docker.internal:10000/devstoreaccount1;QueueEndpoint=http://host.docker.internal:10001/devstoreaccount1;TableEndpoint=http://host.docker.internal:10002/devstoreaccount1;
+    build:
+      context: .
+      dockerfile: src/LoanReception/Dockerfile
+    depends_on:
+      - azurite
+      - creditcheck
 
   loanprocessmonitor:
     image: contosoloans/loanprocessmonitor
@@ -50,12 +54,12 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - SiloName=LoanProcessMonitor
+      - OrleansSiloPort=11113
+      - OrleansGatewayPort=30003
       - AZURE_TABLE_SERVICE_CONNECTION_STRING=DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://host.docker.internal:10000/devstoreaccount1;QueueEndpoint=http://host.docker.internal:10001/devstoreaccount1;TableEndpoint=http://host.docker.internal:10002/devstoreaccount1;
     build:
       context: .
       dockerfile: src/LoanProcessMonitor/Dockerfile
     depends_on:
-      - azurite
       - loanreception
-      - creditcheck
 

@@ -1,6 +1,5 @@
-﻿using System.Net;
-using ContosoLoans;
-using Orleans.Configuration;
+﻿using Orleans.Configuration;
+using System.Net;
 
 namespace Microsoft.AspNetCore.Hosting {
     public static class SiloBuilderServiceCollectionExtensions {
@@ -38,8 +37,7 @@ namespace Microsoft.AspNetCore.Hosting {
                     ? args[3]
                     : "Silo"
                 : builder.Configuration["SiloName"];
-
-
+            
             var connectionString = string.IsNullOrEmpty(builder.Configuration["AZURE_TABLE_SERVICE_CONNECTION_STRING"])
                 ? (args.Length > 4)
                     ? args[4]

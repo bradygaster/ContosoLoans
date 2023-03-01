@@ -3,14 +3,14 @@ WORKDIR /app
 EXPOSE 80
 EXPOSE 5001
 EXPOSE 11111
-EXPOSE 30000
+EXPOSE 30001
 
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
 COPY ["src/CreditCheck/CreditCheck.csproj", "src/CreditCheck/"]
 COPY ["src/Abstractions/Abstractions.csproj", "src/Abstractions/"]
 COPY ["src/SiloInfrastructure/SiloInfrastructure.csproj", "src/SiloInfrastructure/"]
-COPY ["Diagnostics/Diagnostics.csproj", "Diagnostics/"]
+COPY ["src/Diagnostics/Diagnostics.csproj", "src/Diagnostics/"]
 RUN dotnet restore "src/CreditCheck/CreditCheck.csproj"
 COPY . .
 WORKDIR "/src/src/CreditCheck"

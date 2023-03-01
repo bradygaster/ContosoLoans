@@ -24,7 +24,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Clients", "Clients", "{5C3B
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LoanProcessMonitor", "src\LoanProcessMonitor\LoanProcessMonitor.csproj", "{3D53BDED-1946-402D-BC92-DE2B7D8422A2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Diagnostics", "Diagnostics\Diagnostics.csproj", "{4F213276-B000-4FEF-8FCB-80DF2E7B9294}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Diagnostics", "src\Diagnostics\Diagnostics.csproj", "{4F213276-B000-4FEF-8FCB-80DF2E7B9294}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Observability", "Observability", "{ED9BEEC4-34A0-43E1-AE73-C2C0F4B780FA}"
 	ProjectSection(SolutionItems) = preProject

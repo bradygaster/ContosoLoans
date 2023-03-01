@@ -2,13 +2,13 @@ FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
 WORKDIR /app
 EXPOSE 80
 EXPOSE 5003
-EXPOSE 11111
-EXPOSE 30000
+EXPOSE 11113
+EXPOSE 30003
 
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
 COPY ["src/LoanProcessMonitor/LoanProcessMonitor.csproj", "src/LoanProcessMonitor/"]
-COPY ["Diagnostics/Diagnostics.csproj", "Diagnostics/"]
+COPY ["src/Diagnostics/Diagnostics.csproj", "src/Diagnostics/"]
 COPY ["src/Abstractions/Abstractions.csproj", "src/Abstractions/"]
 RUN dotnet restore "src/LoanProcessMonitor/LoanProcessMonitor.csproj"
 COPY . .
