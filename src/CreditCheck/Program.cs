@@ -3,6 +3,6 @@ builder.UseOpenTelemetry("CreditCheck");
 builder.BuildSiloFromArguments(args);
 
 var app = builder.Build();
-app.MapGet("/healthz", () => "CreditCheck is up");
+app.MapGet("/", () => "CreditCheck is up and running.");
 app.UsePrometheus();
 app.Run();

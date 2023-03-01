@@ -43,7 +43,7 @@ app.MapGet("/loans", async () => {
 });
 
 // get a list of the active loans in the system
-app.MapGet("/healthz", () => "Loan Reception is up and running!");
+app.MapGet("/", () => "Loan Reception is up and running.");
 
 // start the app
 app.UsePrometheus();
