@@ -46,7 +46,7 @@ namespace Microsoft.AspNetCore.Hosting {
 
             builder.Host.UseOrleans(siloBuilder => {
                 siloBuilder
-                    .ConfigureEndpoints(IPAddress.Loopback, siloPort, gatewayPort)
+                    .ConfigureEndpoints(siloPort, gatewayPort)
                     .Configure<ClusterOptions>(options => {
                         options.ClusterId = "dev";
                         options.ServiceId = "ContosoLoans";
