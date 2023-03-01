@@ -4,16 +4,19 @@
     <TargetFramework>net7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileContext>..\..</DockerfileContext>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Orleans.Client" Version="7.1.0" />
+    <PackageReference Include="Microsoft.Orleans.Server" Version="7.1.0" />
     <PackageReference Include="Microsoft.Orleans.Clustering.AzureStorage" Version="7.1.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\Diagnostics\Diagnostics.csproj" />
     <ProjectReference Include="..\Abstractions\Abstractions.csproj" />
+    <ProjectReference Include="..\SiloInfrastructure\SiloInfrastructure.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,29 +1,20 @@
 using ContosoLoans;
-using System.Diagnostics;
 
-// useful when debugging to wait for the silos to start up
-if (Debugger.IsAttached) {
-    await Task.Delay(5000);
-}
+// wait for the other services to come up
+await Task.Delay(10000);
 
 var builder = WebApplication.CreateBuilder(args);
+builder.BuildSiloFromArguments(args);
 
 // Add services to the container.
 builder.UseOpenTelemetry("LoanProcessMonitor");
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 
-// connect an orleans client 
-builder.Services.AddOrleansClient((clientBuilder) => {
-    clientBuilder.UseAzureStorageClustering(options => {
-        options.ConfigureTableServiceClient("UseDevelopmentStorage=true;");
-    });
-});
-
 // add a transient service to get the loan process orchestrator grain
 builder.Services.AddTransient<ILoanProcessOrchestratorGrain>((services) => {
-    var client = services.GetRequiredService<IClusterClient>();
-    return client.GetGrain<ILoanProcessOrchestratorGrain>(0);
+    var grainFactory = services.GetRequiredService<IGrainFactory>();
+    return grainFactory.GetGrain<ILoanProcessOrchestratorGrain>(0);
 });
 
 var app = builder.Build();
@@ -35,7 +26,7 @@ if (!app.Environment.IsDevelopment()) {
 }
 
 // health endpoint
-app.MapGet("/healthz", () => "Loan Process Monitor is up and running.");
+app.MapGet("/health", () => "Loan Process Monitor is up and running.");
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
