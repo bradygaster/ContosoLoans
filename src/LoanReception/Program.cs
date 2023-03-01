@@ -1,5 +1,5 @@
 var builder = WebApplication.CreateBuilder(args);
-builder.UseOpenTelemetry();
+builder.UseOpenTelemetry("LoanReception");
 builder.BuildSiloFromArguments(args);
 
 // openapi stuff
@@ -46,6 +46,7 @@ app.MapGet("/loans", async () => {
 app.MapGet("/healthz", () => "Loan Reception is up and running!");
 
 // start the app
+app.UsePrometheus();
 app.Run();
 
 // gives the API payload a shape so we don't have to pass the domain objects around

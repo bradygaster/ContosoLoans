@@ -25,7 +25,8 @@ namespace Microsoft.AspNetCore.Hosting {
                     .AddAzureTableGrainStorageAsDefault(options =>
                         options.ConfigureTableServiceClient(tblServiceCnStr))
                     .UseAzureStorageClustering(options =>
-                        options.ConfigureTableServiceClient(tblServiceCnStr));
+                        options.ConfigureTableServiceClient(tblServiceCnStr))
+                    .AddActivityPropagation();
 
                 if (action != null)
                     action(siloBuilder);

@@ -9,7 +9,7 @@ if (Debugger.IsAttached) {
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.UseOpenTelemetry();
+builder.UseOpenTelemetry("LoanProcessMonitor");
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 
@@ -42,4 +42,5 @@ app.UseStaticFiles();
 app.UseRouting();
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
+app.UsePrometheus();
 app.Run();

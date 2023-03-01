@@ -5,7 +5,7 @@ using OpenTelemetry.Trace;
 namespace ContosoLoans {
     public static class OpenTelemetryExtensions {
 
-        public static WebApplicationBuilder UseOpenTelemetry(this WebApplicationBuilder builder) {
+        public static WebApplicationBuilder UseOpenTelemetry(this WebApplicationBuilder builder, string serviceName) {
             builder.Services
                 .AddOpenTelemetry()
                     .WithMetrics(metrics => {
@@ -16,7 +16,7 @@ namespace ContosoLoans {
                     .WithTracing(tracing => {
                         tracing.SetResourceBuilder(
                             ResourceBuilder.CreateDefault()
-                                .AddService(serviceName: "GPSTracker", serviceVersion: "1.0"));
+                                .AddService(serviceName: serviceName, serviceVersion: "1.0"));
 
                         tracing.AddSource("Microsoft.Orleans.Runtime");
                         tracing.AddSource("Microsoft.Orleans.Application");
@@ -27,6 +27,11 @@ namespace ContosoLoans {
                     });
 
             return builder;
+        }
+
+        public static WebApplication UsePrometheus(this WebApplication app) {
+            app.MapPrometheusScrapingEndpoint();
+            return app;
         }
     }
 }
