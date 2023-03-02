@@ -12,6 +12,15 @@ namespace ContosoLoans {
                         metrics
                             .AddAspNetCoreInstrumentation()
                             .AddRuntimeInstrumentation()
+                            .AddEventCountersInstrumentation(c => {
+                                c.AddEventSources(
+                                    "Microsoft.AspNetCore.Hosting",
+                                    "Microsoft-AspNetCore-Server-Kestrel",
+                                    "System.Net.Http",
+                                    "System.Net.Sockets",
+                                    "System.Net.NameResolution",
+                                    "System.Net.Security");
+                            })
                             .AddPrometheusExporter()
                             .AddMeter("Microsoft.Orleans")
                             .AddConsoleExporter();
