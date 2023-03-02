@@ -25,8 +25,12 @@ services:
     build:
       context: .
       dockerfile: src/CreditCheck/Dockerfile
+    volumes:
+      - ./monitordata:/tmp
+      - monitordata:/tmp
     depends_on:
       - azurite
+      - dotnetmonitor
 
   loanreception:
     image: contosoloans/loanreception
@@ -39,9 +43,13 @@ services:
     build:
       context: .
       dockerfile: src/LoanReception/Dockerfile
+    volumes:
+      - ./monitordata:/tmp
+      - monitordata:/tmp
     depends_on:
       - azurite
       - creditcheck
+      - dotnetmonitor
 
   loanprocessmonitor:
     image: contosoloans/loanprocessmonitor
@@ -54,8 +62,12 @@ services:
     build:
       context: .
       dockerfile: src/LoanProcessMonitor/Dockerfile
+    volumes:
+      - ./monitordata:/tmp
+      - monitordata:/tmp
     depends_on:
       - loanreception
+      - dotnetmonitor
 
   zipkin:
     image: openzipkin/zipkin
@@ -88,5 +100,20 @@ services:
       - ./grafana/dashboard/dashboard.yml:/etc/grafana/provisioning/dashboards/main.yaml
       - ./grafana/dashboards:/var/lib/grafana/dashboards
 
+  dotnetmonitor:
+    image: mcr.microsoft.com/dotnet/monitor:7
+    container_name: dotnetmonitor
+    environment:
+      - DOTNETMONITOR_DiagnosticPort__ConnectionMode=Listen
+      - DOTNETMONITOR_Storage__DefaultSharedPath=dotnet-tmp
+      - DOTNETMONITOR_Urls=http://localhost:52323
+      - DOTNETMONITOR_Metrics__Endpoints=http://+:52325
+    ports:
+      - 52323:52323
+    volumes:
+      - ./monitordata:/tmp
+      - monitordata:/tmp
+
 volumes:
   prom_data:
+  monitordata:

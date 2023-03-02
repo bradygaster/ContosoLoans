@@ -11,3 +11,6 @@ scrape_configs:
   - job_name: 'LoanProcessMonitor'
     static_configs:
       - targets: ['loanprocessmonitor:80']
+  - job_name: 'dotnet monitor'
+    static_configs:
+      - targets: ['dotnetmonitor:52325']
