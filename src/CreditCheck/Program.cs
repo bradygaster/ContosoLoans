@@ -1,4 +1,5 @@
 var builder = WebApplication.CreateBuilder(args);
+builder.Configuration.AddKeyPerFile("/secrets", optional: true);
 builder.UseOpenTelemetry("CreditCheck");
 builder.BuildSiloFromArguments(args);
 

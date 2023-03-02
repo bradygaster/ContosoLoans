@@ -4,12 +4,15 @@ using ContosoLoans;
 await Task.Delay(10000);
 
 var builder = WebApplication.CreateBuilder(args);
-builder.BuildSiloFromArguments(args);
+builder.Configuration.AddKeyPerFile("/secrets", optional: true);
 
 // Add services to the container.
 builder.UseOpenTelemetry("LoanProcessMonitor");
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+
+// set up the silo components
+builder.BuildSiloFromArguments(args);
 
 // add a transient service to get the loan process orchestrator grain
 builder.Services.AddTransient<ILoanProcessOrchestratorGrain>((services) => {
