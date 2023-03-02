@@ -22,7 +22,7 @@ namespace ContosoLoans {
                         tracing.AddSource("Microsoft.Orleans.Application");
 
                         tracing.AddZipkinExporter(zipkin => {
-                            zipkin.Endpoint = new Uri("http://localhost:9411/api/v2/spans");
+                            zipkin.Endpoint = new Uri("http://zipkin:9411/api/v2/spans");
                         });
                     });
 
