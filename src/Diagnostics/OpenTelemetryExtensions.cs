@@ -10,16 +10,20 @@ namespace ContosoLoans {
                 .AddOpenTelemetry()
                     .WithMetrics(metrics => {
                         metrics
+                            .AddAspNetCoreInstrumentation()
+                            .AddRuntimeInstrumentation()
                             .AddPrometheusExporter()
-                            .AddMeter("Microsoft.Orleans");
+                            .AddMeter("Microsoft.Orleans")
+                            .AddConsoleExporter();
                     })
-                    .WithTracing(tracing => {
-                        tracing.SetResourceBuilder(
-                            ResourceBuilder.CreateDefault()
+                    .WithTracing(tracing => { 
+                        tracing
+                            .AddAspNetCoreInstrumentation()
+                            .AddConsoleExporter()
+                            .AddSource("Microsoft.Orleans.Runtime")
+                            .AddSource("Microsoft.Orleans.Application")
+                            .SetResourceBuilder(ResourceBuilder.CreateDefault()
                                 .AddService(serviceName: serviceName, serviceVersion: "1.0"));
-
-                        tracing.AddSource("Microsoft.Orleans.Runtime");
-                        tracing.AddSource("Microsoft.Orleans.Application");
 
                         tracing.AddZipkinExporter(zipkin => {
                             zipkin.Endpoint = new Uri("http://zipkin:9411/api/v2/spans");

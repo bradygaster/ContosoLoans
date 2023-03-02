@@ -28,9 +28,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Diagnostics", "src\Diagnost
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Observability", "Observability", "{ED9BEEC4-34A0-43E1-AE73-C2C0F4B780FA}"
 	ProjectSection(SolutionItems) = preProject
-		grafana_dash.json = grafana_dash.json
-		prometheus.yml = prometheus.yml
-		readme.md = readme.md
+		grafana\dashboard\dashboard.yml = grafana\dashboard\dashboard.yml
+		grafana\datasource\datasource.yml = grafana\datasource\datasource.yml
+		grafana\dashboards\main-dashboard.json = grafana\dashboards\main-dashboard.json
+		prometheus\prometheus.yml = prometheus\prometheus.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docker", "Docker", "{4E75D5DE-332F-4996-9569-312B1933447F}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose.yml = docker-compose.yml
 	EndProjectSection
 EndProject
 Global
@@ -72,7 +78,7 @@ Global
 		{DDE1663A-3606-4F08-AC13-FD847A4FCEE6} = {D1BCA3D0-5D4A-42A0-9738-AF0E16477D17}
 		{243C220C-01C5-4EB5-BCBD-50418835D1E3} = {52F24433-DC7A-4368-BDDD-EE4FC93A5A27}
 		{3D53BDED-1946-402D-BC92-DE2B7D8422A2} = {5C3B72C9-07C1-4503-9F25-898A15FEC21E}
-		{4F213276-B000-4FEF-8FCB-80DF2E7B9294} = {52F24433-DC7A-4368-BDDD-EE4FC93A5A27}
+		{4F213276-B000-4FEF-8FCB-80DF2E7B9294} = {ED9BEEC4-34A0-43E1-AE73-C2C0F4B780FA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BB8D4CF9-149C-4941-9B4B-5756EA3DE8FE}
