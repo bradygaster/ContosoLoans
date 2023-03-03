@@ -101,7 +101,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "systemruntime_gen_0_size_bytes{job=\"memoryleak\"}",
+          "expr": "systemruntime_gen_0_size_bytes",
           "hide": false,
           "interval": "",
           "legendFormat": "Gen 0 Size",
@@ -109,7 +109,7 @@
         },
         {
           "exemplar": true,
-          "expr": "systemruntime_gen_1_size_bytes{job=\"memoryleak\"}",
+          "expr": "systemruntime_gen_1_size_bytes",
           "hide": false,
           "interval": "",
           "legendFormat": "Gen 1 Size",
@@ -117,7 +117,7 @@
         },
         {
           "exemplar": true,
-          "expr": "systemruntime_gen_2_size_bytes{job=\"memoryleak\"}",
+          "expr": "systemruntime_gen_2_size_bytes",
           "hide": false,
           "interval": "",
           "legendFormat": "Gen 2 Size",
@@ -125,7 +125,7 @@
         },
         {
           "exemplar": true,
-          "expr": "systemruntime_loh_size_bytes{job=\"memoryleak\"}",
+          "expr": "systemruntime_loh_size_bytes",
           "hide": false,
           "interval": "",
           "legendFormat": "LOH Size",
@@ -133,7 +133,7 @@
         },
         {
           "exemplar": true,
-          "expr": "systemruntime_poh_size_bytes{job=\"memoryleak\"}",
+          "expr": "systemruntime_poh_size_bytes",
           "hide": false,
           "interval": "",
           "legendFormat": "POH Size",
@@ -216,14 +216,14 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "systemruntime_gc_heap_size_bytes{job=\"memoryleak\"}",
+          "expr": "systemruntime_gc_heap_size_bytes",
           "interval": "",
           "legendFormat": "GC Heap Size",
           "refId": "A"
         },
         {
           "exemplar": true,
-          "expr": "systemruntime_working_set_bytes{job=\"memoryleak\"}",
+          "expr": "systemruntime_working_set_bytes",
           "hide": false,
           "interval": "",
           "legendFormat": "Working Set",
@@ -323,7 +323,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "systemruntime_cpu_usage_ratio{job=\"memoryleak\"}",
+          "expr": "systemruntime_cpu_usage_ratio",
           "interval": "",
           "legendFormat": "CPU Usage",
           "refId": "A"
@@ -405,7 +405,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "systemruntime_alloc_rate_bytes{job=\"memoryleak\"}",
+          "expr": "systemruntime_alloc_rate_bytes",
           "interval": "",
           "legendFormat": "Alloc rate",
           "refId": "A"
@@ -518,7 +518,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "systemruntime_gc_fragmentation_ratio{job=\"memoryleak\"}",
+          "expr": "systemruntime_gc_fragmentation_ratio",
           "interval": "",
           "legendFormat": "Total Fragmentation",
           "refId": "A"
@@ -599,7 +599,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "systemruntime_time_in_gc_ratio{job=\"memoryleak\"}",
+          "expr": "systemruntime_time_in_gc_ratio",
           "interval": "",
           "legendFormat": "% Time in GC",
           "refId": "A"

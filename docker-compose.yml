@@ -14,6 +14,20 @@ services:
     volumes:
       - ./azurite:/workspace
 
+  dotnetmonitor:
+    image: mcr.microsoft.com/dotnet/monitor:7
+    container_name: dotnetmonitor
+    environment:
+      - DOTNETMONITOR_DiagnosticPort__ConnectionMode=Listen
+      - DOTNETMONITOR_Storage__DefaultSharedPath=/tmp
+      - DOTNETMONITOR_Urls=http://localhost:52323
+      - DOTNETMONITOR_Metrics__Endpoints=http://+:52325
+    ports:
+      - 52323:52323
+    volumes:
+      - ./monitordata:/tmp
+    command: [ "collect", "--no-auth" ]
+
   creditcheck:
     image: contosoloans/creditcheck
     ports:
@@ -21,12 +35,12 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - SiloName=CreditCheck
+      - DOTNET_DiagnosticPorts=/tmp/dotnet-monitor.sock
     build:
       context: .
       dockerfile: src/CreditCheck/Dockerfile
     volumes:
       - ./monitordata:/tmp
-      - monitordata:/tmp
       - ./secrets:/secrets
     depends_on:
       - azurite
@@ -39,12 +53,12 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - SiloName=LoanReception
+      - DOTNET_DiagnosticPorts=/tmp/dotnet-monitor.sock
     build:
       context: .
       dockerfile: src/LoanReception/Dockerfile
     volumes:
       - ./monitordata:/tmp
-      - monitordata:/tmp
       - ./secrets:/secrets
     depends_on:
       - azurite
@@ -58,12 +72,12 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - SiloName=LoanProcessMonitor
+      - DOTNET_DiagnosticPorts=/tmp/dotnet-monitor.sock
     build:
       context: .
       dockerfile: src/LoanProcessMonitor/Dockerfile
     volumes:
       - ./monitordata:/tmp
-      - monitordata:/tmp
       - ./secrets:/secrets
     depends_on:
       - loanreception
@@ -100,20 +114,5 @@ services:
       - ./grafana/dashboard/dashboard.yml:/etc/grafana/provisioning/dashboards/main.yaml
       - ./grafana/dashboards:/var/lib/grafana/dashboards
 
-  dotnetmonitor:
-    image: mcr.microsoft.com/dotnet/monitor:7
-    container_name: dotnetmonitor
-    environment:
-      - DOTNETMONITOR_DiagnosticPort__ConnectionMode=Listen
-      - DOTNETMONITOR_Storage__DefaultSharedPath=dotnet-tmp
-      - DOTNETMONITOR_Urls=http://localhost:52323
-      - DOTNETMONITOR_Metrics__Endpoints=http://+:52325
-    ports:
-      - 52323:52323
-    volumes:
-      - ./monitordata:/tmp
-      - monitordata:/tmp
-
 volumes:
   prom_data:
-  monitordata:
